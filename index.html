@@ -13,12 +13,14 @@
       padding: 20px;
     }
     #game-container {
+      position: relative;
       margin: 0 auto;
       width: 620px;
       background: #fff;
       padding: 20px;
       border: 2px solid #ccc;
       border-radius: 10px;
+      overflow: hidden;
     }
     canvas {
       background: #e0f7fa;
@@ -26,10 +28,63 @@
       display: block;
       margin: 10px auto;
     }
+    /* Overlay untuk teks demo */
+    #overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+      z-index: 10;
+    }
+    #overlay h2 {
+      margin-bottom: 20px;
+    }
+    #overlay p {
+      text-align: left;
+      max-width: 550px;
+      line-height: 1.6;
+    }
+    #start-btn {
+      margin-top: 30px;
+      padding: 10px 20px;
+      font-size: 18px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background: #4caf50;
+      color: #fff;
+    }
   </style>
 </head>
 <body>
   <div id="game-container">
+    <!-- Overlay Demo -->
+    <div id="overlay">
+      <h2>🌟 Selamat datang di Bubble Dash v1.1! 🌟</h2>
+      <p>
+        💥 Gelembung warna-warni berterbangan di sekitarmu!<br>
+        💡 Tugasmu sederhana: Klik gelembung yang warnanya cocok dengan target sebelum waktu habis.<br><br>
+        ⏳ Kamu punya 60 detik untuk mengumpulkan poin sebanyak mungkin!<br>
+        😃 Perhatikan baik-baik, karena sekarang ada emotikon lucu di setiap gelembung!<br><br>
+        🔔 Tips:<br>
+        ✅ Jangan klik gelembung yang salah, itu hanya membuang waktu!<br>
+        ✅ Gunakan kecepatan dan fokusmu untuk mencetak skor tertinggi!<br>
+        ✅ Warna target akan berubah setiap beberapa detik, jadi tetap waspada!<br><br>
+        📢 Siap untuk tantangan ini?<br>
+        Tekan <strong>Mulai</strong> dan lihat seberapa cepat reaksimu!
+      </p>
+      <button id="start-btn">Mulai</button>
+    </div>
+
     <h1>Bubble Dash v1.1</h1>
     <p>Target Color: <span id="targetColor"></span></p>
     <p>Time: <span id="timer">60</span> detik</p>
@@ -52,6 +107,11 @@
     const targetColorDisplay = document.getElementById("targetColor");
     const timerDisplay = document.getElementById("timer");
     const scoreDisplay = document.getElementById("score");
+    const overlay = document.getElementById("overlay");
+    const startBtn = document.getElementById("start-btn");
+
+    // Variabel untuk menyimpan interval
+    let timerInterval, bubbleInterval, targetInterval;
 
     // Fungsi untuk menentukan warna target secara acak
     function setTargetColor() {
@@ -66,7 +126,6 @@
       const x = Math.random() * (canvas.width - 2 * radius) + radius;
       const y = Math.random() * (canvas.height - 2 * radius) + radius;
       const color = colors[Math.floor(Math.random() * colors.length)];
-      // Pilih emotikon secara acak
       const emot = emoticons[Math.floor(Math.random() * emoticons.length)];
       bubbles.push({ x, y, radius, color, emot });
     }
@@ -108,7 +167,7 @@
             score += 10;
             bubbles.splice(i, 1);
             scoreDisplay.textContent = score;
-            break; // hanya meledakkan satu gelembung per klik
+            break;
           }
         }
       }
@@ -120,31 +179,41 @@
       requestAnimationFrame(update);
     }
 
-    // Timer hitung mundur
-    const timerInterval = setInterval(() => {
-      timeLeft--;
-      timerDisplay.textContent = timeLeft;
-      if (timeLeft <= 0) {
-        clearInterval(timerInterval);
-        alert("Waktu habis! Skor kamu: " + score);
-        // Muat ulang halaman untuk memulai permainan baru (opsional)
-        window.location.reload();
-      }
-    }, 1000);
-
-    // Tambah gelembung baru setiap 800ms
-    setInterval(() => {
-      createBubble();
-    }, 800);
-
-    // Ganti warna target setiap 5 detik
-    setInterval(() => {
+    // Fungsi untuk memulai game
+    function startGame() {
+      // Sembunyikan overlay demo
+      overlay.style.display = "none";
+      // Inisialisasi game
       setTargetColor();
-    }, 5000);
+      update();
 
-    // Inisialisasi game
-    setTargetColor();
-    update();
+      // Timer hitung mundur
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          clearInterval(bubbleInterval);
+          clearInterval(targetInterval);
+          alert("Waktu habis! Skor kamu: " + score);
+          // Muat ulang halaman untuk memulai permainan baru (opsional)
+          window.location.reload();
+        }
+      }, 1000);
+
+      // Tambah gelembung baru setiap 800ms
+      bubbleInterval = setInterval(() => {
+        createBubble();
+      }, 800);
+
+      // Ganti warna target setiap 5 detik
+      targetInterval = setInterval(() => {
+        setTargetColor();
+      }, 5000);
+    }
+
+    // Mulai game ketika tombol "Mulai" ditekan
+    startBtn.addEventListener("click", startGame);
   </script>
 </body>
 </html>
