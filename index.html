@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bubble Dash v1.1</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+    #game-container {
+      margin: 0 auto;
+      width: 620px;
+      background: #fff;
+      padding: 20px;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+    }
+    canvas {
+      background: #e0f7fa;
+      border: 1px solid #000;
+      display: block;
+      margin: 10px auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <h1>Bubble Dash v1.1</h1>
+    <p>Target Color: <span id="targetColor"></span></p>
+    <p>Time: <span id="timer">60</span> detik</p>
+    <p>Score: <span id="score">0</span></p>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+  </div>
+
+  <script>
+    // Inisialisasi canvas dan variabel game
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let bubbles = [];
+    let score = 0;
+    let timeLeft = 60; // durasi permainan dalam detik
+    let targetColor = "";
+    const colors = ["red", "blue", "green", "yellow", "purple", "orange"];
+    const emoticons = ["😀", "😃", "😄", "😁", "😆", "😂", "😊", "😍"];
+
+    const targetColorDisplay = document.getElementById("targetColor");
+    const timerDisplay = document.getElementById("timer");
+    const scoreDisplay = document.getElementById("score");
+
+    // Fungsi untuk menentukan warna target secara acak
+    function setTargetColor() {
+      targetColor = colors[Math.floor(Math.random() * colors.length)];
+      targetColorDisplay.textContent = targetColor;
+      targetColorDisplay.style.color = targetColor;
+    }
+
+    // Fungsi untuk membuat gelembung baru (v1.1 dengan emotikon)
+    function createBubble() {
+      const radius = Math.random() * 20 + 20; // radius antara 20 dan 40
+      const x = Math.random() * (canvas.width - 2 * radius) + radius;
+      const y = Math.random() * (canvas.height - 2 * radius) + radius;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      // Pilih emotikon secara acak
+      const emot = emoticons[Math.floor(Math.random() * emoticons.length)];
+      bubbles.push({ x, y, radius, color, emot });
+    }
+
+    // Fungsi untuk menggambar semua gelembung di canvas beserta emotikonnya
+    function drawBubbles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      bubbles.forEach(bubble => {
+        // Gambar gelembung
+        ctx.beginPath();
+        ctx.arc(bubble.x, bubble.y, bubble.radius, 0, Math.PI * 2);
+        ctx.fillStyle = bubble.color;
+        ctx.fill();
+        ctx.strokeStyle = "#fff";
+        ctx.stroke();
+
+        // Gambar emotikon di tengah gelembung
+        ctx.fillStyle = "#000";
+        ctx.font = `${bubble.radius}px Arial`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(bubble.emot, bubble.x, bubble.y);
+      });
+    }
+
+    // Event listener untuk menangani klik pada canvas
+    canvas.addEventListener("click", function(event) {
+      const rect = canvas.getBoundingClientRect();
+      const clickX = event.clientX - rect.left;
+      const clickY = event.clientY - rect.top;
+      
+      // Cek apakah klik berada di dalam sebuah gelembung
+      for (let i = 0; i < bubbles.length; i++) {
+        const bubble = bubbles[i];
+        const distance = Math.sqrt((clickX - bubble.x) ** 2 + (clickY - bubble.y) ** 2);
+        if (distance < bubble.radius) {
+          // Jika warna gelembung sama dengan warna target, gelembung tersebut "meledak"
+          if (bubble.color === targetColor) {
+            score += 10;
+            bubbles.splice(i, 1);
+            scoreDisplay.textContent = score;
+            break; // hanya meledakkan satu gelembung per klik
+          }
+        }
+      }
+    });
+
+    // Fungsi game loop untuk menggambar ulang canvas
+    function update() {
+      drawBubbles();
+      requestAnimationFrame(update);
+    }
+
+    // Timer hitung mundur
+    const timerInterval = setInterval(() => {
+      timeLeft--;
+      timerDisplay.textContent = timeLeft;
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        alert("Waktu habis! Skor kamu: " + score);
+        // Muat ulang halaman untuk memulai permainan baru (opsional)
+        window.location.reload();
+      }
+    }, 1000);
+
+    // Tambah gelembung baru setiap 800ms
+    setInterval(() => {
+      createBubble();
+    }, 800);
+
+    // Ganti warna target setiap 5 detik
+    setInterval(() => {
+      setTargetColor();
+    }, 5000);
+
+    // Inisialisasi game
+    setTargetColor();
+    update();
+  </script>
+</body>
+</html>
