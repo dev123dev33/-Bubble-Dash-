@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bubble Dash v1.1</title>
+  <title>Bubble Dash v1.2 Manual</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -28,8 +28,10 @@
       display: block;
       margin: 10px auto;
     }
-    /* Overlay untuk teks demo */
-    #overlay {
+    /* Overlay Demo */
+    #overlay, 
+    /* Overlay Manual */
+    #manual-overlay {
       position: absolute;
       top: 0;
       left: 0;
@@ -45,15 +47,15 @@
       box-sizing: border-box;
       z-index: 10;
     }
-    #overlay h2 {
+    #overlay h2, #manual-overlay h2 {
       margin-bottom: 20px;
     }
-    #overlay p {
+    #overlay p, #manual-overlay p {
       text-align: left;
       max-width: 550px;
       line-height: 1.6;
     }
-    #start-btn {
+    #start-btn, #manual-close-btn, #manual-btn {
       margin-top: 30px;
       padding: 10px 20px;
       font-size: 18px;
@@ -63,18 +65,25 @@
       background: #4caf50;
       color: #fff;
     }
+    /* Tombol Manual di header game */
+    #manual-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #2196f3;
+    }
   </style>
 </head>
 <body>
   <div id="game-container">
     <!-- Overlay Demo -->
     <div id="overlay">
-      <h2>🌟 Selamat datang di Bubble Dash v1.1! 🌟</h2>
+      <h2>🌟 Selamat datang di Bubble Dash v1.2! 🌟</h2>
       <p>
         💥 Gelembung warna-warni berterbangan di sekitarmu!<br>
         💡 Tugasmu sederhana: Klik gelembung yang warnanya cocok dengan target sebelum waktu habis.<br><br>
         ⏳ Kamu punya 60 detik untuk mengumpulkan poin sebanyak mungkin!<br>
-        😃 Perhatikan baik-baik, karena sekarang ada emotikon lucu di setiap gelembung!<br><br>
+        😃 Kini hadir bonus bubble (gelembung emas dengan bintang ⭐) yang memberikan 50 poin jika diklik, serta efek suara saat gelembung meletus!<br><br>
         🔔 Tips:<br>
         ✅ Jangan klik gelembung yang salah, itu hanya membuang waktu!<br>
         ✅ Gunakan kecepatan dan fokusmu untuk mencetak skor tertinggi!<br>
@@ -85,7 +94,26 @@
       <button id="start-btn">Mulai</button>
     </div>
 
-    <h1>Bubble Dash v1.1</h1>
+    <!-- Overlay Manual (tersembunyi secara default) -->
+    <div id="manual-overlay" style="display:none;">
+      <h2>Petunjuk Game (Manual)</h2>
+      <p>
+        <strong>Kontrol Game:</strong><br>
+        • Klik gelembung dengan warna target untuk mendapatkan 10 poin.<br>
+        • Jika mengklik gelembung bonus (berwarna emas dengan ⭐), dapatkan 50 poin.<br>
+        • Perhatikan waktu yang tersisa, kamu hanya memiliki 60 detik.<br><br>
+        <strong>Tips:</strong><br>
+        • Jangan klik gelembung yang tidak sesuai dengan warna target.<br>
+        • Warna target akan berubah setiap 5 detik, jadi tetap awasi layar!<br>
+        • Manfaatkan bonus bubble untuk menambah skor dengan cepat.
+      </p>
+      <button id="manual-close-btn">Tutup Petunjuk</button>
+    </div>
+
+    <!-- Tombol untuk membuka petunjuk manual -->
+    <button id="manual-btn">Manual</button>
+
+    <h1>Bubble Dash v1.2</h1>
     <p>Target Color: <span id="targetColor"></span></p>
     <p>Time: <span id="timer">60</span> detik</p>
     <p>Score: <span id="score">0</span></p>
@@ -109,9 +137,17 @@
     const scoreDisplay = document.getElementById("score");
     const overlay = document.getElementById("overlay");
     const startBtn = document.getElementById("start-btn");
+    const manualOverlay = document.getElementById("manual-overlay");
+    const manualBtn = document.getElementById("manual-btn");
+    const manualCloseBtn = document.getElementById("manual-close-btn");
 
-    // Variabel untuk menyimpan interval
-    let timerInterval, bubbleInterval, targetInterval;
+    // Variabel untuk audio efek pop
+    let popSound = new Audio("pop.mp3");
+
+    // Variabel untuk bubble spawn rate
+    let bubbleSpawnInterval = 800; // milidetik
+
+    let timerInterval, targetInterval;
 
     // Fungsi untuk menentukan warna target secara acak
     function setTargetColor() {
@@ -120,26 +156,34 @@
       targetColorDisplay.style.color = targetColor;
     }
 
-    // Fungsi untuk membuat gelembung baru (v1.1 dengan emotikon)
+    // Fungsi untuk membuat gelembung baru (dengan bonus bubble)
     function createBubble() {
       const radius = Math.random() * 20 + 20; // radius antara 20 dan 40
       const x = Math.random() * (canvas.width - 2 * radius) + radius;
       const y = Math.random() * (canvas.height - 2 * radius) + radius;
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      const emot = emoticons[Math.floor(Math.random() * emoticons.length)];
-      bubbles.push({ x, y, radius, color, emot });
+      let color, emot, isBonus = false;
+      
+      if (Math.random() < 0.1) { // 10% peluang muncul bonus bubble
+        isBonus = true;
+        color = "gold";
+        emot = "⭐";
+      } else {
+        color = colors[Math.floor(Math.random() * colors.length)];
+        emot = emoticons[Math.floor(Math.random() * emoticons.length)];
+      }
+      bubbles.push({ x, y, radius, color, emot, isBonus });
     }
 
-    // Fungsi untuk menggambar semua gelembung di canvas beserta emotikonnya
+    // Fungsi untuk menggambar gelembung di canvas
     function drawBubbles() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       bubbles.forEach(bubble => {
-        // Gambar gelembung
         ctx.beginPath();
         ctx.arc(bubble.x, bubble.y, bubble.radius, 0, Math.PI * 2);
         ctx.fillStyle = bubble.color;
         ctx.fill();
-        ctx.strokeStyle = "#fff";
+        ctx.strokeStyle = bubble.isBonus ? "darkorange" : "#fff";
+        ctx.lineWidth = bubble.isBonus ? 3 : 1;
         ctx.stroke();
 
         // Gambar emotikon di tengah gelembung
@@ -151,20 +195,33 @@
       });
     }
 
-    // Event listener untuk menangani klik pada canvas
+    // Spawn bubble secara rekursif dengan interval dinamis
+    function spawnBubble() {
+      createBubble();
+      setTimeout(spawnBubble, bubbleSpawnInterval);
+    }
+
+    // Event listener untuk klik pada canvas
     canvas.addEventListener("click", function(event) {
       const rect = canvas.getBoundingClientRect();
       const clickX = event.clientX - rect.left;
       const clickY = event.clientY - rect.top;
       
-      // Cek apakah klik berada di dalam sebuah gelembung
       for (let i = 0; i < bubbles.length; i++) {
         const bubble = bubbles[i];
         const distance = Math.sqrt((clickX - bubble.x) ** 2 + (clickY - bubble.y) ** 2);
         if (distance < bubble.radius) {
-          // Jika warna gelembung sama dengan warna target, gelembung tersebut "meledak"
+          popSound.currentTime = 0;
+          if (bubble.isBonus) {
+            score += 50;
+            popSound.play();
+            bubbles.splice(i, 1);
+            scoreDisplay.textContent = score;
+            break;
+          }
           if (bubble.color === targetColor) {
             score += 10;
+            popSound.play();
             bubbles.splice(i, 1);
             scoreDisplay.textContent = score;
             break;
@@ -173,7 +230,7 @@
       }
     });
 
-    // Fungsi game loop untuk menggambar ulang canvas
+    // Game loop
     function update() {
       drawBubbles();
       requestAnimationFrame(update);
@@ -181,39 +238,41 @@
 
     // Fungsi untuk memulai game
     function startGame() {
-      // Sembunyikan overlay demo
       overlay.style.display = "none";
-      // Inisialisasi game
       setTargetColor();
       update();
 
-      // Timer hitung mundur
       timerInterval = setInterval(() => {
         timeLeft--;
         timerDisplay.textContent = timeLeft;
         if (timeLeft <= 0) {
           clearInterval(timerInterval);
-          clearInterval(bubbleInterval);
           clearInterval(targetInterval);
           alert("Waktu habis! Skor kamu: " + score);
-          // Muat ulang halaman untuk memulai permainan baru (opsional)
           window.location.reload();
         }
       }, 1000);
 
-      // Tambah gelembung baru setiap 800ms
-      bubbleInterval = setInterval(() => {
-        createBubble();
-      }, 800);
-
-      // Ganti warna target setiap 5 detik
-      targetInterval = setInterval(() => {
-        setTargetColor();
-      }, 5000);
+      targetInterval = setInterval(setTargetColor, 5000);
+      spawnBubble();
+      setInterval(() => {
+        if (bubbleSpawnInterval > 400) {
+          bubbleSpawnInterval -= 50;
+        }
+      }, 10000);
     }
 
-    // Mulai game ketika tombol "Mulai" ditekan
+    // Event listener tombol Mulai
     startBtn.addEventListener("click", startGame);
+
+    // Tombol Manual untuk membuka petunjuk
+    manualBtn.addEventListener("click", () => {
+      manualOverlay.style.display = "flex";
+    });
+    // Tombol untuk menutup petunjuk manual
+    manualCloseBtn.addEventListener("click", () => {
+      manualOverlay.style.display = "none";
+    });
   </script>
 </body>
 </html>
