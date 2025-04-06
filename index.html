@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bubble Dash v1.3</title>
+  <title>Bubble Dash v1.4</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -77,7 +77,7 @@
   <div id="game-container">
     <!-- Overlay Demo -->
     <div id="overlay">
-      <h2>🌟 Selamat datang di Bubble Dash v1.3! 🌟</h2>
+      <h2>🌟 Selamat datang di Bubble Dash v1.4 🌟</h2>
       <p>
         💥 Gelembung warna-warni berterbangan di sekitarmu!<br>
         💡 Tugasmu: Klik gelembung yang warnanya cocok dengan target sebelum waktu habis.<br><br>
@@ -110,11 +110,13 @@
     <!-- Tombol untuk membuka petunjuk Manual -->
     <button id="manual-btn">Manual</button>
 
-    <h1>Bubble Dash v1.3</h1>
+    <h1>Bubble Dash v1.4</h1>
     <p>Target Color: <span id="targetColor"></span></p>
     <p>Time: <span id="timer">60</span> detik</p>
     <p>Score: <span id="score">0</span></p>
+    <p id="warningMessage" style="color: red; font-weight: bold; display: none;"></p>
     <canvas id="gameCanvas" width="600" height="400"></canvas>
+    <audio id="popSound" src="pop.mp3"></audio>
   </div>
 
   <script>
@@ -139,7 +141,7 @@
     const manualCloseBtn = document.getElementById("manual-close-btn");
 
     // Variabel untuk audio efek pop (efek suara masih dalam pengembangan)
-    let popSound = new Audio("pop.mp3");
+    const popSound = document.getElementById("popSound");
 
     // Variabel untuk bubble spawn rate
     let bubbleSpawnInterval = 800; // milidetik
@@ -195,7 +197,9 @@
 
     // Fungsi spawn bubble secara rekursif
     function spawnBubble() {
-      createBubble();
+      if (bubbles.length < 50) { // Batasi jumlah maksimum gelembung
+        createBubble();
+      }
       setTimeout(spawnBubble, bubbleSpawnInterval);
     }
 
@@ -204,32 +208,50 @@
       const rect = canvas.getBoundingClientRect();
       const clickX = event.clientX - rect.left;
       const clickY = event.clientY - rect.top;
-      
+
+      let validClick = false; // Flag untuk menentukan apakah klik valid
+      const warningMessage = document.getElementById("warningMessage");
+
       for (let i = 0; i < bubbles.length; i++) {
         const bubble = bubbles[i];
         const distance = Math.sqrt((clickX - bubble.x) ** 2 + (clickY - bubble.y) ** 2);
         if (distance < bubble.radius) {
-          popSound.currentTime = 0;
+          // Validasi warna target
           if (bubble.isBonus) {
-            score += 50;
-            popSound.play();
-            bubbles.splice(i, 1);
-            scoreDisplay.textContent = score;
-            break;
+            score += 50; // Bonus bubble selalu memberikan skor
+            validClick = true;
+          } else if (bubble.color === targetColor) {
+            score += 10; // Hanya gelembung dengan warna target yang memberikan skor
+            validClick = true;
           }
-          if (bubble.color === targetColor) {
-            score += 10;
-            popSound.play();
-            bubbles.splice(i, 1);
-            scoreDisplay.textContent = score;
-            break;
-          }
+
+          // Hapus gelembung dari array
+          bubbles.splice(i, 1);
+          scoreDisplay.textContent = score;
+          break;
         }
+      }
+
+      // Jika klik tidak valid, tampilkan peringatan
+      if (!validClick) {
+        warningMessage.textContent = "⚠️ Gelembung yang kamu klik tidak sesuai dengan warna target!";
+        warningMessage.style.display = "block";
+
+        // Sembunyikan peringatan setelah 2 detik
+        setTimeout(() => {
+          warningMessage.style.display = "none";
+        }, 2000);
+      } else {
+        popSound.currentTime = 0; // Reset suara agar bisa diputar berulang
+        popSound.play(); // Putar suara pop hanya jika klik valid
       }
     });
 
     // Game loop untuk update canvas
     function update() {
+      // Hapus gelembung yang keluar dari canvas
+      bubbles = bubbles.filter(bubble => bubble.y + bubble.radius > 0);
+
       drawBubbles();
       requestAnimationFrame(update);
     }
@@ -255,10 +277,12 @@
       targetInterval = setInterval(setTargetColor, 5000);
       spawnBubble();
 
-      // Setiap 10 detik, kurangi interval spawn bubble (minimal 400ms)
-      setInterval(() => {
+      // Kurangi interval spawn bubble setiap 10 detik
+      const spawnReductionInterval = setInterval(() => {
         if (bubbleSpawnInterval > 400) {
           bubbleSpawnInterval -= 50;
+        } else {
+          clearInterval(spawnReductionInterval); // Hentikan pengurangan jika sudah mencapai batas
         }
       }, 10000);
     }
