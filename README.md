@@ -1,14 +1,17 @@
-### **Bubble Dash v1.3 - Update Terbaru!** 🎉  
+🎉 Update Bubble Dash v1.4 telah hadir! 🎉
 
-Halo para pemain Bubble Dash! 🚀 Kami telah merilis update terbaru **versi 1.3** yang membawa beberapa peningkatan dan pembaruan penting untuk meningkatkan pengalaman bermain kalian!  
+📅 Setelah 16 hari tanpa kabar, akhirnya Bubble Dash kembali dengan pembaruan yang menyegarkan!
 
-#### **🆕 Fitur Baru:**  
-✅ **Manual Game & Bonus Bubble** – Sekarang tersedia panduan lengkap cara bermain dan penjelasan tentang Bonus Bubble yang bisa memberikan poin ekstra!  
-✅ **Peningkatan Performa** – Gameplay lebih halus dengan optimisasi kecepatan gelembung dan UI yang lebih responsif.  
-✅ **Pembersihan Bug** – Beberapa bug telah diperbaiki untuk memastikan permainan lebih stabil dan menyenangkan.  
+🔧 Apa yang baru di versi 1.4?
 
-#### **⚠️ Catatan:**  
-Kami sadar bahwa efek suara gelembung meletus **belum tersedia secara sempurna**. Jika kamu mendengarnya, kemungkinan itu adalah efek suara dari browser atau hanya *hoki* 😆. Kami akan terus berusaha menambahkan fitur ini di update berikutnya!  
+💥 Efek suara gelembung pecah! Sekarang setiap letusan gelembung terasa lebih hidup dan satisfying.
 
-Terima kasih telah memainkan Bubble Dash! 🎈🔥  
-Selamat bermain dan raih skor tertinggi! 🏆
+🐞 Pembersihan bug yang sempat mengganggu kenyamanan bermain.
+
+🚀 Optimisasi performa agar game makin ringan dan lancar.
+
+🙏 Maaf banget ya buat kalian yang nunggu update ini cukup lama. Gua sempat sibuk dan butuh waktu untuk benerin beberapa hal biar update-nya maksimal. Tapi tenang... ke depan, bakal lebih konsisten lagi ya!
+
+🎯 Yuk langsung coba versi terbarunya dan rasain sensasi nge-pop gelembung yang lebih seru dari sebelumnya!
+
+
