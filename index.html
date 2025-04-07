@@ -117,6 +117,9 @@
     <p id="warningMessage" style="color: red; font-weight: bold; display: none;"></p>
     <canvas id="gameCanvas" width="600" height="400"></canvas>
     <audio id="popSound" src="pop.mp3"></audio>
+    <div id="credits" style="margin-top: 20px; font-size: 14px; color: #555;">
+      <p>Developed by <strong>XOBE DEVELOPMENT</strong></p>
+    </div>
   </div>
 
   <script>
@@ -303,6 +306,19 @@
     // Kode berikut merupakan penambahan untuk memastikan performa game optimal dan bug minim.
     // (Optimisasi dan pembersihan bug dilakukan dengan perbaikan loop rendering dan penanganan array bubbles.)
     console.log("Bubble Dash v1.3: Optimisasi performa dan pembersihan bug telah diterapkan.");
+
+    function showCredits() {
+      const credits = document.createElement("div");
+      credits.id = "credits";
+      credits.style.marginTop = "20px";
+      credits.style.fontSize = "14px";
+      credits.style.color = "#555";
+      credits.innerHTML = 'Developed by <strong>XOBE DEVELOPMENT</strong>';
+      document.body.appendChild(credits);
+    }
+
+    // Panggil fungsi untuk menampilkan credits
+    showCredits();
   </script>
 </body>
 </html>
