@@ -1,17 +1,21 @@
-🎉 Update Bubble Dash v1.4 telah hadir! 🎉
+📢 BUBBLE DASH v1.5 RESMI RILIS!
+Hai para Dashers!
+Setelah satu minggu tanpa kabar, kami kembali dengan versi 1.5 — sebuah update ringan yang meningkatkan stabilitas dan kenyamanan bermain 🎮✨
 
-📅 Setelah 16 hari tanpa kabar, akhirnya Bubble Dash kembali dengan pembaruan yang menyegarkan!
+🔧 Apa yang Baru di v1.5?
+🐞 Perbaikan Bug
 
-🔧 Apa yang baru di versi 1.4?
+🧱 Karakter tidak lagi nyangkut saat menabrak tembok
 
-💥 Efek suara gelembung pecah! Sekarang setiap letusan gelembung terasa lebih hidup dan satisfying.
+🫧 Skor kini bertambah dengan benar saat mengambil bubble
 
-🐞 Pembersihan bug yang sempat mengganggu kenyamanan bermain.
+⚡ Optimisasi Performa
 
-🚀 Optimisasi performa agar game makin ringan dan lancar.
+💡 Performa lebih ringan di perangkat spek rendah
 
-🙏 Maaf banget ya buat kalian yang nunggu update ini cukup lama. Gua sempat sibuk dan butuh waktu untuk benerin beberapa hal biar update-nya maksimal. Tapi tenang... ke depan, bakal lebih konsisten lagi ya!
+🚀 Pengurangan lag saat bubble muncul banyak sekaligus
 
-🎯 Yuk langsung coba versi terbarunya dan rasain sensasi nge-pop gelembung yang lebih seru dari sebelumnya!
+Versi ini dirancang sebagai versi stabil jangka panjang, sambil kami menyiapkan kejutan besar untuk masa depan!
 
+– Dibuat dengan semangat oleh XOBE DEVELOPMENT 💻
 
