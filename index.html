@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bubble Dash v1.4</title>
+  <title>Bubble Dash v1.5</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -77,7 +77,7 @@
   <div id="game-container">
     <!-- Overlay Demo -->
     <div id="overlay">
-      <h2>🌟 Selamat datang di Bubble Dash v1.4 🌟</h2>
+      <h2>🌟 Selamat datang di Bubble Dash v1.5 🌟</h2>
       <p>
         💥 Gelembung warna-warni berterbangan di sekitarmu!<br>
         💡 Tugasmu: Klik gelembung yang warnanya cocok dengan target sebelum waktu habis.<br><br>
@@ -110,7 +110,7 @@
     <!-- Tombol untuk membuka petunjuk Manual -->
     <button id="manual-btn">Manual</button>
 
-    <h1>Bubble Dash v1.4</h1>
+    <h1>Bubble Dash v1.5</h1>
     <p>Target Color: <span id="targetColor"></span></p>
     <p>Time: <span id="timer">60</span> detik</p>
     <p>Score: <span id="score">0</span></p>
@@ -200,10 +200,10 @@
 
     // Fungsi spawn bubble secara rekursif
     function spawnBubble() {
-      if (bubbles.length < 50) { // Batasi jumlah maksimum gelembung
+      if (bubbles.length < 30) { // Batasi jumlah maksimum gelembung
         createBubble();
       }
-      setTimeout(spawnBubble, bubbleSpawnInterval);
+      requestAnimationFrame(spawnBubble); // Gunakan requestAnimationFrame untuk spawn bubble
     }
 
     // Event listener untuk klik pada canvas
@@ -252,8 +252,15 @@
 
     // Game loop untuk update canvas
     function update() {
-      // Hapus gelembung yang keluar dari canvas
-      bubbles = bubbles.filter(bubble => bubble.y + bubble.radius > 0);
+      // Hapus bubble yang keluar dari canvas
+      bubbles = bubbles.filter(bubble => {
+        return (
+          bubble.x + bubble.radius > 0 &&
+          bubble.x - bubble.radius < canvas.width &&
+          bubble.y + bubble.radius > 0 &&
+          bubble.y - bubble.radius < canvas.height
+        );
+      });
 
       drawBubbles();
       requestAnimationFrame(update);
@@ -305,7 +312,7 @@
     // Fitur Baru: Optimisasi dan Pembersihan Bug
     // Kode berikut merupakan penambahan untuk memastikan performa game optimal dan bug minim.
     // (Optimisasi dan pembersihan bug dilakukan dengan perbaikan loop rendering dan penanganan array bubbles.)
-    console.log("Bubble Dash v1.3: Optimisasi performa dan pembersihan bug telah diterapkan.");
+    console.log("Bubble Dash v1.5: Optimisasi performa dan pembersihan bug telah diterapkan.");
 
     function showCredits() {
       const credits = document.createElement("div");
