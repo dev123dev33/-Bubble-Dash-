@@ -3,15 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bubble Dash v1.6</title>
+  <title>Bubble Dash v1.7 Kocak</title>
   <style>
     body {
       font-family: 'Arial', sans-serif;
-      background: linear-gradient(135deg, #74ebd5, #acb6e5); /* Gradien warna latar belakang */
+      background: linear-gradient(135deg, #74ebd5, #acb6e5);
       text-align: center;
       margin: 0;
       padding: 20px;
       color: #333;
+      transition: background 0.5s;
+    }
+    body.dark {
+      background: linear-gradient(135deg, #232526, #414345);
+      color: #f4f4f4;
     }
     #game-container {
       position: relative;
@@ -21,13 +26,90 @@
       padding: 20px;
       border: 2px solid #ccc;
       border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Tambahkan bayangan */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: background 0.5s;
+    }
+    body.dark #game-container {
+      background: #232526;
+      color: #ffe066;
+      border-color: #444;
+    }
+    h1 {
+      font-size: 2.2em;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+      color: #ff9800;
+      text-shadow: 0 2px 8px #fff176;
+    }
+    .theme-toggle {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #eee;
+      border: none;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      font-size: 1.2em;
+      cursor: pointer;
+      transition: background 0.3s;
+      z-index: 10;
+    }
+    body.dark .theme-toggle {
+      background: #444;
+      color: #ffe066;
+    }
+    #targetColor {
+      font-weight: bold;
+      font-size: 1.1em;
+      padding: 2px 10px;
+      border-radius: 8px;
+      background: #e0f7fa;
+      color: #222;
+      margin-left: 6px;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark #targetColor {
+      background: #333;
+      color: #ffe066;
+    }
+    #timer, #score {
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+    #scoreUp {
+      position: absolute;
+      left: 50%;
+      top: 60px;
+      transform: translateX(-50%);
+      font-size: 1.5em;
+      color: #43a047;
+      font-weight: bold;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s, top 0.5s;
+      z-index: 10;
+      text-shadow: 0 2px 8px #fff176;
+    }
+    #warningMessage {
+      color: #e53935;
+      font-weight: bold;
+      margin: 8px 0 0 0;
+      min-height: 22px;
+      transition: opacity 0.3s;
     }
     canvas {
       background: #e0f7fa;
       border: 1px solid #000;
       display: block;
       margin: 10px auto;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      transition: background 0.3s;
+    }
+    body.dark canvas {
+      background: #232526;
+      border-color: #444;
     }
     button {
       margin-top: 10px;
@@ -36,21 +118,21 @@
       cursor: pointer;
       border: none;
       border-radius: 5px;
-      transition: background 0.3s ease, transform 0.2s ease; /* Animasi hover */
+      transition: background 0.3s, transform 0.2s;
     }
     button:hover {
-      background: #ff9800; /* Warna hover tombol */
-      transform: scale(1.05); /* Efek zoom saat hover */
+      background: #ff9800;
+      transform: scale(1.05);
     }
     #pause-btn, #resume-btn {
-      background: #4caf50; /* Warna hijau untuk tombol Pause dan Resume */
+      background: #4caf50;
       color: #fff;
     }
     #manual-btn {
       position: absolute;
       top: 10px;
       right: 10px;
-      background: #2196f3; /* Warna biru untuk tombol Manual */
+      background: #2196f3;
       color: #fff;
     }
     #leaderboard {
@@ -59,9 +141,12 @@
       color: #333;
       text-align: left;
     }
+    body.dark #leaderboard {
+      color: #eee;
+    }
     #leaderboard h3 {
       margin-bottom: 10px;
-      color: #4caf50; /* Warna hijau untuk judul leaderboard */
+      color: #4caf50;
     }
     #leaderboard ul {
       list-style: none;
@@ -72,7 +157,10 @@
       padding: 5px;
       background: #f9f9f9;
       border-radius: 5px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Tambahkan bayangan pada item leaderboard */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    body.dark #leaderboard li {
+      background: #333;
     }
     #credits {
       margin-top: 20px;
@@ -87,31 +175,29 @@
       text-decoration: underline;
     }
     #overlay {
-      position: fixed; /* Tetap di tempat meskipun halaman di-scroll */
-      top: 0;
-      left: 0;
+      position: fixed;
+      top: 0; left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.8); /* Latar belakang semi-transparan */
+      background: rgba(0, 0, 0, 0.8);
       display: flex;
       justify-content: center;
       align-items: center;
       color: #fff;
-      z-index: 1000; /* Pastikan overlay berada di atas elemen lainnya */
+      z-index: 1000;
       text-align: center;
     }
-
     #overlay h2 {
-      font-size: 24px;
+      font-size: 28px;
       margin-bottom: 20px;
+      color: #ff9800;
+      text-shadow: 0 2px 8px #fff176;
     }
-
     #overlay p {
-      font-size: 16px;
+      font-size: 17px;
       line-height: 1.5;
       margin-bottom: 20px;
     }
-
     #overlay button {
       padding: 10px 20px;
       font-size: 18px;
@@ -122,57 +208,29 @@
       cursor: pointer;
       transition: background 0.3s ease;
     }
-
     #overlay button:hover {
       background: #45a049;
+    }
+    @media (max-width: 700px) {
+      #game-container { width: 99vw; padding: 8px 2vw 18px 2vw; }
+      canvas { width: 98vw !important; height: 60vw !important; max-width: 99vw; max-height: 70vw; }
+      #manual-btn, .theme-toggle { top: 6px; }
     }
   </style>
 </head>
 <body>
   <div id="game-container">
-    <!-- Overlay Demo -->
-    <div id="overlay">
-      <h2>🌟 Selamat datang di Bubble Dash v1.6 🌟</h2>
-      <p>
-        💥 Gelembung warna-warni berterbangan di sekitarmu!<br>
-        💡 Tugasmu: Klik gelembung yang warnanya cocok dengan target sebelum waktu habis.<br><br>
-        ⏳ Kamu punya 60 detik untuk mengumpulkan poin sebanyak mungkin!<br>
-        😃 Bonus Bubble (gelembung emas dengan ⭐) muncul sesekali untuk bonus 50 poin.<br><br>
-        🔔 Tips:<br>
-        ✅ Hindari klik gelembung yang tidak sesuai warna target.<br>
-        ✅ Warna target berubah otomatis setiap 5 detik.<br>
-        ✅ Manfaatkan bonus untuk menambah skor dengan cepat!
-      </p>
-      <button id="start-btn">Mulai</button>
-    </div>
-
-    <!-- Overlay Manual (tersembunyi secara default) -->
-    <div id="manual-overlay" style="display:none;">
-      <h2>📖 Manual Game</h2>
-      <p>
-        <strong>Cara Bermain:</strong><br>
-        1. Klik gelembung dengan warna yang sama dengan target.<br>
-        2. Hindari klik gelembung yang salah agar tidak membuang waktu.<br>
-        3. Perhatikan waktu dan warna target yang berubah tiap 5 detik.<br>
-        4. Kumpulkan poin sebanyak mungkin dalam 60 detik!<br><br>
-        <strong>Bonus Bubble:</strong><br>
-        - Gelembung emas (⭐) muncul secara acak.<br>
-        - Klik bonus bubble untuk mendapatkan 50 poin ekstra.
-      </p>
-      <button id="manual-close-btn">Tutup Manual</button>
-    </div>
-
-    <!-- Tombol untuk membuka petunjuk Manual -->
+    <button class="theme-toggle" title="Ganti Tema" onclick="toggleTheme()">🌙</button>
     <button id="manual-btn">Manual</button>
-
-    <h1>Bubble Dash v1.6</h1>
+    <h1>Bubble Dash v1.7 🤪</h1>
     <p>Target Color: <span id="targetColor"></span></p>
     <p>Time: <span id="timer">60</span> detik</p>
     <p>Score: <span id="score">0</span></p>
+    <div id="scoreUp"></div>
     <p id="warningMessage" style="color: red; font-weight: bold; display: none;"></p>
     <canvas id="gameCanvas" width="600" height="400"></canvas>
     <audio id="popSound" src="pop.mp3"></audio>
-    <div id="credits" style="margin-top: 20px; font-size: 14px; color: #555;">
+    <div id="credits">
       <p>Developed by <strong>XOBE DEVELOPMENT</strong></p>
     </div>
     <button id="pause-btn">Pause</button>
@@ -183,18 +241,59 @@
     </div>
   </div>
 
+  <!-- Overlay Demo -->
+  <div id="overlay">
+    <div>
+      <h2>🌟 Selamat datang di Bubble Dash v1.7 Kocak 🤪🌟</h2>
+      <p>
+        💥 Gelembung warna-warni berterbangan di sekitarmu!<br>
+        💡 Tugasmu: Klik gelembung yang warnanya cocok dengan target sebelum waktu habis.<br><br>
+        ⏳ Kamu punya 60 detik untuk mengumpulkan poin sebanyak mungkin!<br>
+        😃 Bonus Bubble (gelembung emas dengan ⭐) muncul sesekali untuk bonus 50 poin.<br><br>
+        🔔 Tips:<br>
+        ✅ Hindari klik gelembung yang tidak sesuai warna target.<br>
+        ✅ Warna target berubah otomatis setiap 5 detik.<br>
+        ✅ Manfaatkan bonus untuk menambah skor dengan cepat!<br>
+        🤪 Versi ini lebih kocak, lebih fun, dan lebih rame!
+      </p>
+      <button id="start-btn">Mulai</button>
+    </div>
+  </div>
+
+  <!-- Overlay Manual (tersembunyi secara default) -->
+  <div id="manual-overlay" style="display:none;">
+    <h2>📖 Manual Game</h2>
+    <p>
+      <strong>Cara Bermain:</strong><br>
+      1. Klik gelembung dengan warna yang sama dengan target.<br>
+      2. Hindari klik gelembung yang salah agar tidak membuang waktu.<br>
+      3. Perhatikan waktu dan warna target yang berubah tiap 5 detik.<br>
+      4. Kumpulkan poin sebanyak mungkin dalam 60 detik!<br><br>
+      <strong>Bonus Bubble:</strong><br>
+      - Gelembung emas (⭐) muncul secara acak.<br>
+      - Klik bonus bubble untuk mendapatkan 50 poin ekstra.<br>
+      - Versi 1.7: Ada efek skor naik dan tema gelap/terang!
+    </p>
+    <button id="manual-close-btn">Tutup Manual</button>
+  </div>
+
   <script>
-    // Inisialisasi canvas dan variabel game
+    // === Tema ===
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      document.querySelector('.theme-toggle').textContent =
+        document.body.classList.contains('dark') ? '☀️' : '🌙';
+    }
+
+    // === Variabel Game ===
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
-
     let bubbles = [];
     let score = 0;
-    let timeLeft = 60; // durasi permainan dalam detik
+    let timeLeft = 60;
     let targetColor = "";
     const colors = ["red", "blue", "green", "yellow", "purple", "orange"];
-    const emoticons = ["😀", "😃", "😄", "😁", "😆", "😂", "😊", "😍"];
-
+    const emoticons = ["😀", "😃", "😄", "😁", "😆", "😂", "😊", "😍", "🤪", "🥳", "😜"];
     const targetColorDisplay = document.getElementById("targetColor");
     const timerDisplay = document.getElementById("timer");
     const scoreDisplay = document.getElementById("score");
@@ -206,17 +305,18 @@
     const pauseBtn = document.getElementById("pause-btn");
     const resumeBtn = document.getElementById("resume-btn");
     const leaderboardList = document.getElementById("leaderboard-list");
+    const scoreUp = document.getElementById("scoreUp");
 
     let isPaused = false;
     let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
 
-    // Variabel untuk audio efek pop (efek suara masih dalam pengembangan)
+    // Variabel untuk audio efek pop
     const popSound = document.getElementById("popSound");
 
     // Variabel untuk bubble spawn rate
-    let bubbleSpawnInterval = 800; // milidetik
+    let bubbleSpawnInterval = 800; // ms
 
-    let timerInterval, targetInterval;
+    let timerInterval, targetInterval, spawnBubbleTimeout;
 
     // Fungsi untuk memilih warna target secara acak
     function setTargetColor() {
@@ -231,8 +331,6 @@
       const x = Math.random() * (canvas.width - 2 * radius) + radius;
       const y = Math.random() * (canvas.height - 2 * radius) + radius;
       let color, emot, isBonus = false;
-      
-      // Bonus bubble: 10% peluang muncul
       if (Math.random() < 0.1) {
         isBonus = true;
         color = "gold";
@@ -241,7 +339,7 @@
         color = colors[Math.floor(Math.random() * colors.length)];
         emot = emoticons[Math.floor(Math.random() * emoticons.length)];
       }
-      bubbles.push({ x, y, radius, color, emot, isBonus });
+      bubbles.push({ x, y, radius, color, emot, isBonus, dx: (Math.random()-0.5)*2, dy: (Math.random()-0.5)*2 });
     }
 
     // Fungsi untuk menggambar gelembung pada canvas
@@ -251,7 +349,9 @@
         ctx.beginPath();
         ctx.arc(bubble.x, bubble.y, bubble.radius, 0, Math.PI * 2);
         ctx.fillStyle = bubble.color;
+        ctx.globalAlpha = 0.85;
         ctx.fill();
+        ctx.globalAlpha = 1;
         ctx.strokeStyle = bubble.isBonus ? "darkorange" : "#fff";
         ctx.lineWidth = bubble.isBonus ? 3 : 1;
         ctx.stroke();
@@ -267,19 +367,21 @@
 
     // Fungsi spawn bubble secara rekursif
     function spawnBubble() {
-      if (bubbles.length < 30) { // Batasi jumlah maksimum gelembung
+      if (isPaused) return;
+      if (bubbles.length < 30) {
         createBubble();
       }
-      requestAnimationFrame(spawnBubble); // Gunakan requestAnimationFrame untuk spawn bubble
+      spawnBubbleTimeout = setTimeout(spawnBubble, bubbleSpawnInterval);
     }
 
     // Event listener untuk klik pada canvas
     canvas.addEventListener("click", function(event) {
+      if (isPaused) return;
       const rect = canvas.getBoundingClientRect();
       const clickX = event.clientX - rect.left;
       const clickY = event.clientY - rect.top;
 
-      let validClick = false; // Flag untuk menentukan apakah klik valid
+      let validClick = false;
       const warningMessage = document.getElementById("warningMessage");
 
       for (let i = 0; i < bubbles.length; i++) {
@@ -288,48 +390,56 @@
         if (distance < bubble.radius) {
           // Validasi warna target
           if (bubble.isBonus) {
-            score += 50; // Bonus bubble selalu memberikan skor
+            score += 50;
+            showScoreUp("+50 🤩");
             validClick = true;
           } else if (bubble.color === targetColor) {
-            score += 10; // Hanya gelembung dengan warna target yang memberikan skor
+            score += 10;
+            showScoreUp("+10 😎");
             validClick = true;
           }
-
-          // Hapus gelembung dari array
           bubbles.splice(i, 1);
           scoreDisplay.textContent = score;
           break;
         }
       }
 
-      // Jika klik tidak valid, tampilkan peringatan
       if (!validClick) {
-        warningMessage.textContent = "⚠️ Gelembung yang kamu klik tidak sesuai dengan warna target!";
+        warningMessage.textContent = "⚠️ Salah klik! Itu bukan warna target, kocak!";
         warningMessage.style.display = "block";
-
-        // Sembunyikan peringatan setelah 2 detik
         setTimeout(() => {
           warningMessage.style.display = "none";
         }, 2000);
       } else {
-        popSound.currentTime = 0; // Reset suara agar bisa diputar berulang
-        popSound.play(); // Putar suara pop hanya jika klik valid
+        popSound.currentTime = 0;
+        popSound.play();
       }
     });
 
-    // Game loop untuk update canvas
-    function update() {
-      // Hapus bubble yang keluar dari canvas
-      bubbles = bubbles.filter(bubble => {
-        return (
-          bubble.x + bubble.radius > 0 &&
-          bubble.x - bubble.radius < canvas.width &&
-          bubble.y + bubble.radius > 0 &&
-          bubble.y - bubble.radius < canvas.height
-        );
-      });
+    // Animasi skor naik
+    function showScoreUp(text) {
+      scoreUp.textContent = text;
+      scoreUp.style.opacity = 1;
+      scoreUp.style.top = "60px";
+      setTimeout(() => {
+        scoreUp.style.opacity = 0;
+        scoreUp.style.top = "30px";
+      }, 700);
+    }
 
-      drawBubbles();
+    // Game loop untuk update canvas dan bubble movement
+    function update() {
+      if (!isPaused) {
+        // Bubble movement
+        bubbles.forEach(bubble => {
+          bubble.x += bubble.dx;
+          bubble.y += bubble.dy;
+          // Bounce effect
+          if (bubble.x - bubble.radius < 0 || bubble.x + bubble.radius > canvas.width) bubble.dx *= -1;
+          if (bubble.y - bubble.radius < 0 || bubble.y + bubble.radius > canvas.height) bubble.dy *= -1;
+        });
+        drawBubbles();
+      }
       requestAnimationFrame(update);
     }
 
@@ -338,8 +448,6 @@
       overlay.style.display = "none";
       setTargetColor();
       update();
-
-      // Timer hitung mundur
       timerInterval = setInterval(() => {
         timeLeft--;
         timerDisplay.textContent = timeLeft;
@@ -347,16 +455,14 @@
           endGame();
         }
       }, 1000);
-
       targetInterval = setInterval(setTargetColor, 5000);
       spawnBubble();
-
       // Kurangi interval spawn bubble setiap 10 detik
       const spawnReductionInterval = setInterval(() => {
         if (bubbleSpawnInterval > 400) {
           bubbleSpawnInterval -= 50;
         } else {
-          clearInterval(spawnReductionInterval); // Hentikan pengurangan jika sudah mencapai batas
+          clearInterval(spawnReductionInterval);
         }
       }, 10000);
     }
@@ -366,6 +472,7 @@
       isPaused = true;
       clearInterval(timerInterval);
       clearInterval(targetInterval);
+      clearTimeout(spawnBubbleTimeout);
       pauseBtn.style.display = "none";
       resumeBtn.style.display = "inline-block";
     }
@@ -381,6 +488,7 @@
         }
       }, 1000);
       targetInterval = setInterval(setTargetColor, 5000);
+      spawnBubble();
       pauseBtn.style.display = "inline-block";
       resumeBtn.style.display = "none";
     }
@@ -389,6 +497,7 @@
     function endGame() {
       clearInterval(timerInterval);
       clearInterval(targetInterval);
+      clearTimeout(spawnBubbleTimeout);
       alert("Waktu habis! Skor kamu: " + score);
       saveScore(score);
       window.location.reload();
@@ -400,7 +509,7 @@
       if (playerName) {
         leaderboard.push({ name: playerName, score });
         leaderboard.sort((a, b) => b.score - a.score);
-        leaderboard = leaderboard.slice(0, 10); // Simpan hanya 10 skor tertinggi
+        leaderboard = leaderboard.slice(0, 10);
         localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
         updateLeaderboard();
       }
@@ -434,24 +543,6 @@
 
     // Panggil fungsi untuk memperbarui leaderboard saat halaman dimuat
     updateLeaderboard();
-
-    // Fitur Baru: Optimisasi dan Pembersihan Bug
-    // Kode berikut merupakan penambahan untuk memastikan performa game optimal dan bug minim.
-    // (Optimisasi dan pembersihan bug dilakukan dengan perbaikan loop rendering dan penanganan array bubbles.)
-    console.log("Bubble Dash v1.6: Fitur baru dan optimisasi diterapkan.");
-
-    function showCredits() {
-      const credits = document.createElement("div");
-      credits.id = "credits";
-      credits.style.marginTop = "20px";
-      credits.style.fontSize = "14px";
-      credits.style.color = "#555";
-      credits.innerHTML = 'Developed by <strong>XOBE DEVELOPMENT</strong>';
-      document.body.appendChild(credits);
-    }
-
-    // Panggil fungsi untuk menampilkan credits
-    showCredits();
   </script>
 </body>
 </html>
