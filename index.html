@@ -216,6 +216,74 @@
       canvas { width: 98vw !important; height: 60vw !important; max-width: 99vw; max-height: 70vw; }
       #manual-btn, .theme-toggle { top: 6px; }
     }
+    #iklan-tebakx-float {
+      position: fixed;
+      top: 50%;
+      right: 18px;
+      transform: translateY(-50%);
+      z-index: 9999;
+      text-decoration: none;
+      animation: iklan-bounce 2.5s infinite;
+      filter: drop-shadow(0 4px 16px rgba(106,17,203,0.18));
+      transition: right 0.3s;
+    }
+    .iklan-float-content {
+      background: linear-gradient(100deg,#6a11cb 60%,#2575fc 100%);
+      color: #fff;
+      padding: 18px 20px 14px 20px;
+      border-radius: 16px 8px 16px 8px;
+      font-size: 1.13em;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+      text-align: center;
+      min-width: 170px;
+      max-width: 220px;
+      border: 2.5px solid #fff;
+      font-weight: bold;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    #iklan-tebakx-float:hover .iklan-float-content {
+      transform: scale(1.07) rotate(-2deg);
+      box-shadow: 0 8px 32px #6a11cb99;
+    }
+    .iklan-btn {
+      display: inline-block;
+      margin-top: 8px;
+      background: #fff;
+      color: #2575fc;
+      padding: 4px 14px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 1em;
+      box-shadow: 0 2px 8px #2575fc33;
+      transition: background 0.2s, color 0.2s;
+    }
+    #iklan-tebakx-float:hover .iklan-btn {
+      background: #2575fc;
+      color: #fff;
+    }
+    @keyframes iklan-bounce {
+      0%,100% { transform: translateY(-50%) scale(1);}
+      10% { transform: translateY(-50%) scale(1.08);}
+      20% { transform: translateY(-50%) scale(1);}
+      30% { transform: translateY(-50%) scale(1.06);}
+      40% { transform: translateY(-50%) scale(1);}
+    }
+    @media (max-width: 700px) {
+      #iklan-tebakx-float {
+        position: static;
+        display: block;
+        margin: 24px auto 0 auto;
+        transform: none;
+        animation: none;
+        right: 0;
+      }
+      .iklan-float-content {
+        border-radius: 14px;
+        min-width: 0;
+        max-width: 99vw;
+        font-size: 1em;
+      }
+    }
   </style>
 </head>
 <body>
@@ -544,5 +612,21 @@
     // Panggil fungsi untuk memperbarui leaderboard saat halaman dimuat
     updateLeaderboard();
   </script>
+  <!-- Iklan TebakX -->
+  <div id="iklan-tebakx" style="margin:32px auto 0 auto; max-width:420px; text-align:center;">
+    <a href="https://dev123dev33.github.io/tebakx/" target="_blank" style="text-decoration:none;display:inline-block;">
+      <div style="background:linear-gradient(90deg,#6a11cb,#2575fc);color:#fff;padding:18px 16px;border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,0.13);font-size:1.15em;transition:transform 0.2s;cursor:pointer;">
+        🎉 <b>Coba TebakX!</b> Game tebak angka seru, adu insting & logika! <span style="background:#fff;color:#2575fc;padding:2px 8px;border-radius:8px;font-weight:bold;margin-left:8px;">Main Gratis</span>
+      </div>
+    </a>
+  </div>
+  <!-- Iklan TebakX Floating Samping -->
+  <a href="https://dev123dev33.github.io/tebakx/" target="_blank" id="iklan-tebakx-float" title="Coba TebakX!">
+    <div class="iklan-float-content">
+      🎉 <b>Coba TebakX!</b><br>
+      <span style="font-size:0.98em;">Game tebak angka seru, adu insting & logika!</span>
+      <div class="iklan-btn">Main Gratis</div>
+    </div>
+  </a>
 </body>
 </html>
