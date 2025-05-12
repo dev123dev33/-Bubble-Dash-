@@ -1,16 +1,31 @@
-🫧 Bubble Dash v1.6 — Update Resmi!
+🫧 Bubble Dash v1.7 — Update Kocak & Fun!
+Siap-siap ngakak dan pecahin bubble lebih seru dari sebelumnya! Di versi 1.7 ini, kami hadirkan nuansa lebih lucu, rame, dan penuh emoji! 😜🎉
 
-✨ Fitur Baru:
-• 🏆 Sistem Leaderboard Lokal — Rekor kamu sekarang bisa disimpan dan ditampilkan otomatis!
-• ⏸️ Pause & Resume — Kamu bisa jeda game kapan saja, dan lanjut lagi tanpa kehilangan progres!
-• 🎨 Tampilan Baru — Desain lebih clean, smooth, dan modern untuk pengalaman bermain yang lebih nyaman.
+🎨 Fitur Baru:
+🖼️ Tampilan Lebih Fun
+Judul, overlay, dan manual kini lebih rame dan berwarna! Cocok buat yang suka gaya santai 🤪
 
-⚙️ Optimisasi:
-• Animasi bubble dibuat lebih halus dan cepat
-• Performa game lebih ringan, bahkan di device spesifikasi rendah
+📢 Notifikasi Skor Naik
+Skormu naik? Ada notif spesial dan emoji lucu! 🥳
 
-🐞 Perbaikan Bug:
-• Bubble yang tidak meledak saat disentuh cepat sudah diperbaiki
-• Masalah skor yang tidak tampil setelah pause kini telah diatasi
+🌙 Tema Gelap/Terang
+Bisa diubah kapan aja dengan toggle di pojok kiri atas. Main siang atau malam tetap nyaman 😎
 
-🎮 Ayo pecahkan lebih banyak bubble dan kejar posisi di leaderboard!
+🤡 Bubble dengan Emoji Baru
+Kini ada bubble ekspresif kayak 🤪, 😜, 🥳 biar meletusnya makin satisfying!
+
+😅 Pesan Salah Klik Lebih Lucu
+Salah klik? Siap-siap dibercandain sama game-nya!
+
+⚙️ Optimisasi & Bugfix:
+Performa UI makin halus dan responsif
+
+Overlay dibersihkan & diperbaiki
+
+Efek skor & transisi ditingkatkan
+
+Pembersihan kode biar lebih ringan
+
+🧪 Versi ini didesain lebih fun, ringan, dan cocok buat healing bareng Bubble Dash.
+Yuk pecahin bubble rame-rame dan kejar skor tertinggimu! 💥💖
+
