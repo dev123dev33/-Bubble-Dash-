@@ -1,31 +1,31 @@
-🫧 Bubble Dash v1.7 — Update Kocak & Fun!
-Siap-siap ngakak dan pecahin bubble lebih seru dari sebelumnya! Di versi 1.7 ini, kami hadirkan nuansa lebih lucu, rame, dan penuh emoji! 😜🎉
+🆕✨ BUBBLE DASH v1.8 TELAH DIRILIS! ✨🫧
+Versi ini hadir dengan peningkatan besar di tampilan, animasi, dan kenyamanan main! Siap dash lagi? 💨
 
-🎨 Fitur Baru:
-🖼️ Tampilan Lebih Fun
-Judul, overlay, dan manual kini lebih rame dan berwarna! Cocok buat yang suka gaya santai 🤪
+📱 Tampilan Mobile Makin Responsif
 
-📢 Notifikasi Skor Naik
-Skormu naik? Ada notif spesial dan emoji lucu! 🥳
+Canvas, tombol, overlay, dan leaderboard sekarang pas di semua ukuran layar HP.
 
-🌙 Tema Gelap/Terang
-Bisa diubah kapan aja dengan toggle di pojok kiri atas. Main siang atau malam tetap nyaman 😎
+Lebih nyaman, lebih rapi, dan nggak bikin mata capek!
 
-🤡 Bubble dengan Emoji Baru
-Kini ada bubble ekspresif kayak 🤪, 😜, 🥳 biar meletusnya makin satisfying!
+🎞️ Animasi & Efek Baru
 
-😅 Pesan Salah Klik Lebih Lucu
-Salah klik? Siap-siap dibercandain sama game-nya!
+💥 Bubble meledak saat diklik, bikin tiap sentuhan makin satisfying!
 
-⚙️ Optimisasi & Bugfix:
-Performa UI makin halus dan responsif
+📈 Animasi skor naik kini lebih halus, lebih enak dilihat!
 
-Overlay dibersihkan & diperbaiki
+❌ Salah klik? Sekarang ada efek getar biar kamu langsung tahu!
 
-Efek skor & transisi ditingkatkan
+🎨 UI Lebih Modern & Interaktif
 
-Pembersihan kode biar lebih ringan
+Tombol membesar saat disentuh, bikin lebih jelas dan fun.
 
-🧪 Versi ini didesain lebih fun, ringan, dan cocok buat healing bareng Bubble Dash.
-Yuk pecahin bubble rame-rame dan kejar skor tertinggimu! 💥💖
+Overlay lebih smooth, transisi terasa natural.
 
+Leaderboard tampil lebih rapi di mobile, gampang dibaca dan lebih keren!
+
+🎯 Perbaikan Minor
+
+Penyesuaian warna dan layout biar lebih bersih & nyaman dilihat.
+
+📥 Yuk update sekarang dan rasakan keseruan barunya!
+#BubbleDash #Update1_8 #NoLagMoreFun
