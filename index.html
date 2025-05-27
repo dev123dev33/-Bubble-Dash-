@@ -3,8 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bubble Dash v1.7 Kocak</title>
+  <title>Bubble Dash v1.8 Kocak</title>
   <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
     body {
       font-family: 'Arial', sans-serif;
       background: linear-gradient(135deg, #74ebd5, #acb6e5);
@@ -12,6 +17,7 @@
       margin: 0;
       padding: 20px;
       color: #333;
+      min-height: 100vh;
       transition: background 0.5s;
     }
     body.dark {
@@ -21,11 +27,13 @@
     #game-container {
       position: relative;
       margin: 0 auto;
-      width: 620px;
+      width: 100%;
+      max-width: 620px;
       background: #fff;
       padding: 20px;
       border: 2px solid #ccc;
       border-radius: 10px;
+      box-sizing: border-box;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       transition: background 0.5s;
     }
@@ -90,6 +98,7 @@
       transition: opacity 0.5s, top 0.5s;
       z-index: 10;
       text-shadow: 0 2px 8px #fff176;
+      will-change: opacity, top;
     }
     #warningMessage {
       color: #e53935;
@@ -97,6 +106,7 @@
       margin: 8px 0 0 0;
       min-height: 22px;
       transition: opacity 0.3s;
+      display: none;
     }
     canvas {
       background: #e0f7fa;
@@ -106,6 +116,11 @@
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.07);
       transition: background 0.3s;
+      width: 100%;
+      max-width: 600px;
+      height: auto;
+      aspect-ratio: 3/2;
+      touch-action: manipulation;
     }
     body.dark canvas {
       background: #232526;
@@ -119,6 +134,13 @@
       border: none;
       border-radius: 5px;
       transition: background 0.3s, transform 0.2s;
+      box-shadow: 0 2px 8px #00000011;
+      outline: none;
+      user-select: none;
+    }
+    button:active {
+      transform: scale(0.97);
+      background: #ffe066;
     }
     button:hover {
       background: #ff9800;
@@ -140,24 +162,44 @@
       font-size: 16px;
       color: #333;
       text-align: left;
+      border-radius: 10px;
+      background: #f9f9f9;
+      padding: 10px 12px 14px 12px;
+      box-shadow: 0 2px 8px #0001;
     }
     body.dark #leaderboard {
       color: #eee;
+      background: #232526;
+      box-shadow: 0 2px 8px #0005;
     }
     #leaderboard h3 {
       margin-bottom: 10px;
       color: #4caf50;
+      text-align: center;
     }
     #leaderboard ul {
       list-style: none;
       padding: 0;
+      margin: 0;
     }
     #leaderboard li {
       margin-bottom: 5px;
-      padding: 5px;
-      background: #f9f9f9;
+      padding: 5px 8px;
+      background: #fff;
       border-radius: 5px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.07);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1em;
+      justify-content: flex-start;
+    }
+    #leaderboard li span.rank {
+      font-weight: bold;
+      color: #ff9800;
+      min-width: 1.8em;
+      display: inline-block;
+      text-align: right;
     }
     body.dark #leaderboard li {
       background: #333;
@@ -174,31 +216,43 @@
     #credits a:hover {
       text-decoration: underline;
     }
-    #overlay {
+    #overlay, #manual-overlay {
       position: fixed;
       top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.82);
       display: flex;
       justify-content: center;
       align-items: center;
       color: #fff;
       z-index: 1000;
       text-align: center;
+      transition: opacity 0.4s;
+      animation: fadeIn 0.7s;
     }
-    #overlay h2 {
+    #overlay > div, #manual-overlay > div {
+      background: rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 18px 18px 12px 18px; /* Ubah padding bawah dari 22px ke 12px */
+      box-shadow: 0 4px 32px #0006;
+      max-width: 95vw;
+      width: 370px;
+      margin: 0 8px;
+      animation: popIn 0.7s;
+    }
+    #overlay h2, #manual-overlay h2 {
       font-size: 28px;
       margin-bottom: 20px;
       color: #ff9800;
       text-shadow: 0 2px 8px #fff176;
     }
-    #overlay p {
+    #overlay p, #manual-overlay p {
       font-size: 17px;
       line-height: 1.5;
       margin-bottom: 20px;
     }
-    #overlay button {
+    #overlay button, #manual-overlay button {
       padding: 10px 20px;
       font-size: 18px;
       background: #4caf50;
@@ -207,68 +261,35 @@
       border-radius: 5px;
       cursor: pointer;
       transition: background 0.3s ease;
+      margin-top: 0; /* Ubah dari 10px ke 0 agar tombol lebih dekat ke teks */
+      margin-bottom: 0;
+      display: inline-block;
     }
-    #overlay button:hover {
+    #overlay button:hover, #manual-overlay button:hover {
       background: #45a049;
     }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      80% { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(1); }
+    }
     @media (max-width: 700px) {
-      #game-container { width: 99vw; padding: 8px 2vw 18px 2vw; }
-      canvas { width: 98vw !important; height: 60vw !important; max-width: 99vw; max-height: 70vw; }
+      #game-container {
+        width: 99vw;
+        max-width: 99vw;
+        padding: 8px 2vw 18px 2vw;
+      }
+      canvas {
+        width: 98vw !important;
+        max-width: 99vw;
+        height: auto !important;
+        aspect-ratio: 3/2;
+      }
       #manual-btn, .theme-toggle { top: 6px; }
-    }
-    #iklan-tebakx-float {
-      position: fixed;
-      top: 50%;
-      right: 18px;
-      transform: translateY(-50%);
-      z-index: 9999;
-      text-decoration: none;
-      animation: iklan-bounce 2.5s infinite;
-      filter: drop-shadow(0 4px 16px rgba(106,17,203,0.18));
-      transition: right 0.3s;
-    }
-    .iklan-float-content {
-      background: linear-gradient(100deg,#6a11cb 60%,#2575fc 100%);
-      color: #fff;
-      padding: 18px 20px 14px 20px;
-      border-radius: 16px 8px 16px 8px;
-      font-size: 1.13em;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.13);
-      text-align: center;
-      min-width: 170px;
-      max-width: 220px;
-      border: 2.5px solid #fff;
-      font-weight: bold;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    #iklan-tebakx-float:hover .iklan-float-content {
-      transform: scale(1.07) rotate(-2deg);
-      box-shadow: 0 8px 32px #6a11cb99;
-    }
-    .iklan-btn {
-      display: inline-block;
-      margin-top: 8px;
-      background: #fff;
-      color: #2575fc;
-      padding: 4px 14px;
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 1em;
-      box-shadow: 0 2px 8px #2575fc33;
-      transition: background 0.2s, color 0.2s;
-    }
-    #iklan-tebakx-float:hover .iklan-btn {
-      background: #2575fc;
-      color: #fff;
-    }
-    @keyframes iklan-bounce {
-      0%,100% { transform: translateY(-50%) scale(1);}
-      10% { transform: translateY(-50%) scale(1.08);}
-      20% { transform: translateY(-50%) scale(1);}
-      30% { transform: translateY(-50%) scale(1.06);}
-      40% { transform: translateY(-50%) scale(1);}
-    }
-    @media (max-width: 700px) {
       #iklan-tebakx-float {
         position: static;
         display: block;
@@ -276,6 +297,7 @@
         transform: none;
         animation: none;
         right: 0;
+        z-index: 10;
       }
       .iklan-float-content {
         border-radius: 14px;
@@ -283,36 +305,160 @@
         max-width: 99vw;
         font-size: 1em;
       }
+      #leaderboard {
+        font-size: 15px;
+        padding: 7px 4px 10px 4px;
+      }
+      #leaderboard li {
+        font-size: 0.98em;
+        padding: 4px 4px;
+      }
+      #overlay > div, #manual-overlay > div {
+        width: 97vw;
+        min-width: 0;
+        padding: 10px 4vw 8px 4vw; /* Ubah padding bawah jadi 8px */
+      }
+    }
+    #iklan-tebakx {
+      margin: 32px auto 0 auto;
+      max-width: 420px;
+      text-align: center;
+      animation: iklanFadeIn 1.2s;
+    }
+    #iklan-tebakx > a > div {
+      background: linear-gradient(90deg,#6a11cb,#2575fc);
+      color: #fff;
+      padding: 18px 16px;
+      border-radius: 14px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+      font-size: 1.15em;
+      transition: transform 0.25s, box-shadow 0.25s, filter 0.25s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+    #iklan-tebakx > a > div::after {
+      content: "";
+      position: absolute;
+      left: -60%;
+      top: 0;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(120deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0.01) 100%);
+      transform: skewX(-25deg);
+      pointer-events: none;
+      animation: iklanShine 2.5s infinite;
+      z-index: 2;
+    }
+    #iklan-tebakx > a > div:hover {
+      transform: scale(1.04) rotate(-1deg);
+      box-shadow: 0 8px 32px #6a11cb99;
+      filter: brightness(1.08) saturate(1.2);
+    }
+    #iklan-tebakx > a > div:active {
+      transform: scale(0.97);
+      filter: brightness(0.98);
+    }
+    @keyframes iklanShine {
+      0% { left: -60%; }
+      60% { left: 120%; }
+      100% { left: 120%; }
+    }
+    @keyframes iklanFadeIn {
+      from { opacity: 0; transform: translateY(40px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    /* Bubble pop animation */
+    @keyframes bubble-pop {
+      0% { transform: scale(1); opacity: 1;}
+      80% { transform: scale(1.25); opacity: 0.7;}
+      100% { transform: scale(0.1); opacity: 0;}
+    }
+    .bubble-pop-anim {
+      animation: bubble-pop 0.35s forwards;
+    }
+    /* Shake animation for warning */
+    @keyframes shake {
+      0% { transform: translateX(0);}
+      20% { transform: translateX(-8px);}
+      40% { transform: translateX(8px);}
+      60% { transform: translateX(-6px);}
+      80% { transform: translateX(6px);}
+      100% { transform: translateX(0);}
+    }
+    .shake {
+      animation: shake 0.4s;
+    }
+    .iklan-utama-efek {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(100deg,#6a11cb 60%,#2575fc 100%);
+      transition: transform 0.25s, box-shadow 0.25s, filter 0.25s;
+      cursor: pointer;
+    }
+    .iklan-utama-efek::after {
+      content: "";
+      position: absolute;
+      left: -60%;
+      top: 0;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(120deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0.01) 100%);
+      transform: skewX(-25deg);
+      pointer-events: none;
+      animation: iklanShine 2.5s infinite;
+      z-index: 2;
+    }
+    .iklan-utama-efek:hover {
+      transform: scale(1.05) rotate(-1deg);
+      box-shadow: 0 12px 40px #6a11cbcc;
+      filter: brightness(1.12) saturate(1.25);
     }
   </style>
 </head>
 <body>
+  <!-- Iklan TebakX Utama, lebih menonjol dan di atas judul game -->
+  <div id="iklan-tebakx" style="margin:0 auto 18px auto; max-width:440px; text-align:center;">
+    <a href="https://dev123dev33.github.io/tebakx/" target="_blank" style="text-decoration:none;display:inline-block;">
+      <div class="iklan-float-content iklan-utama-efek" style="font-size:1.18em; padding:22px 18px; border:3px solid #fff; box-shadow:0 8px 32px #6a11cb77; animation: iklanFadeIn 1.2s;">
+        <span style="font-size:1.4em;vertical-align:middle;">🎉</span>
+        <b>Coba TebakX!</b>
+        <span style="display:inline-block;background:#fff;color:#2575fc;padding:3px 12px;border-radius:10px;font-weight:bold;margin-left:10px;box-shadow:0 2px 8px #2575fc33;">Main Gratis</span>
+        <br>
+        <span style="font-size:1em;display:block;margin-top:6px;">Game tebak angka seru, adu insting & logika!</span>
+      </div>
+    </a>
+  </div>
   <div id="game-container">
     <button class="theme-toggle" title="Ganti Tema" onclick="toggleTheme()">🌙</button>
     <button id="manual-btn">Manual</button>
-    <h1>Bubble Dash v1.7 🤪</h1>
+    <h1>Bubble Dash v1.8 🤪</h1>
     <p>Target Color: <span id="targetColor"></span></p>
     <p>Time: <span id="timer">60</span> detik</p>
     <p>Score: <span id="score">0</span></p>
     <div id="scoreUp"></div>
-    <p id="warningMessage" style="color: red; font-weight: bold; display: none;"></p>
+    <p id="warningMessage"></p>
     <canvas id="gameCanvas" width="600" height="400"></canvas>
     <audio id="popSound" src="pop.mp3"></audio>
-    <div id="credits">
-      <p>Developed by <strong>XOBE DEVELOPMENT</strong></p>
-    </div>
     <button id="pause-btn">Pause</button>
     <button id="resume-btn" style="display: none;">Resume</button>
     <div id="leaderboard">
       <h3>🏆 Leaderboard</h3>
       <ul id="leaderboard-list"></ul>
     </div>
+    <div id="credits">
+      <p>
+        Developed by <strong>XOBE DEVELOPMENT</strong><br>
+        &copy; 2025 XOBE DEVELOPMENT. All rights reserved.
+      </p>
+    </div>
   </div>
 
   <!-- Overlay Demo -->
   <div id="overlay">
     <div>
-      <h2>🌟 Selamat datang di Bubble Dash v1.7 Kocak 🤪🌟</h2>
+      <h2>🌟 Selamat datang di Bubble Dash v1.8 Kocak 🤪🌟</h2>
       <p>
         💥 Gelembung warna-warni berterbangan di sekitarmu!<br>
         💡 Tugasmu: Klik gelembung yang warnanya cocok dengan target sebelum waktu habis.<br><br>
@@ -330,19 +476,21 @@
 
   <!-- Overlay Manual (tersembunyi secara default) -->
   <div id="manual-overlay" style="display:none;">
-    <h2>📖 Manual Game</h2>
-    <p>
-      <strong>Cara Bermain:</strong><br>
-      1. Klik gelembung dengan warna yang sama dengan target.<br>
-      2. Hindari klik gelembung yang salah agar tidak membuang waktu.<br>
-      3. Perhatikan waktu dan warna target yang berubah tiap 5 detik.<br>
-      4. Kumpulkan poin sebanyak mungkin dalam 60 detik!<br><br>
-      <strong>Bonus Bubble:</strong><br>
-      - Gelembung emas (⭐) muncul secara acak.<br>
-      - Klik bonus bubble untuk mendapatkan 50 poin ekstra.<br>
-      - Versi 1.7: Ada efek skor naik dan tema gelap/terang!
-    </p>
-    <button id="manual-close-btn">Tutup Manual</button>
+    <div>
+      <h2>📖 Manual Game</h2>
+      <p>
+        <strong>Cara Bermain:</strong><br>
+        1. Klik gelembung dengan warna yang sama dengan target.<br>
+        2. Hindari klik gelembung yang salah agar tidak membuang waktu.<br>
+        3. Perhatikan waktu dan warna target yang berubah tiap 5 detik.<br>
+        4. Kumpulkan poin sebanyak mungkin dalam 60 detik!<br><br>
+        <strong>Bonus Bubble:</strong><br>
+        - Gelembung emas (⭐) muncul secara acak.<br>
+        - Klik bonus bubble untuk mendapatkan 50 poin ekstra.<br>
+        - Versi 1.8: Animasi bubble pop, efek getar, dan tampilan mobile lebih kece!
+      </p>
+      <button id="manual-close-btn">Tutup Manual</button>
+    </div>
   </div>
 
   <script>
@@ -374,6 +522,7 @@
     const resumeBtn = document.getElementById("resume-btn");
     const leaderboardList = document.getElementById("leaderboard-list");
     const scoreUp = document.getElementById("scoreUp");
+    const warningMessage = document.getElementById("warningMessage");
 
     let isPaused = false;
     let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
@@ -385,6 +534,9 @@
     let bubbleSpawnInterval = 800; // ms
 
     let timerInterval, targetInterval, spawnBubbleTimeout;
+
+    // Untuk animasi bubble pop
+    let poppingBubbles = [];
 
     // Fungsi untuk memilih warna target secara acak
     function setTargetColor() {
@@ -407,13 +559,33 @@
         color = colors[Math.floor(Math.random() * colors.length)];
         emot = emoticons[Math.floor(Math.random() * emoticons.length)];
       }
-      bubbles.push({ x, y, radius, color, emot, isBonus, dx: (Math.random()-0.5)*2, dy: (Math.random()-0.5)*2 });
+      bubbles.push({ x, y, radius, color, emot, isBonus, dx: (Math.random()-0.5)*2, dy: (Math.random()-0.5)*2, popping: false, popFrame: 0 });
     }
 
     // Fungsi untuk menggambar gelembung pada canvas
     function drawBubbles() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Gambar popping bubbles (animasi)
+      poppingBubbles.forEach(pb => {
+        ctx.save();
+        ctx.globalAlpha = 1 - pb.popFrame / 8;
+        ctx.beginPath();
+        ctx.arc(pb.x, pb.y, pb.radius * (1 + pb.popFrame/8), 0, Math.PI * 2);
+        ctx.fillStyle = pb.color;
+        ctx.fill();
+        ctx.lineWidth = pb.isBonus ? 3 : 1;
+        ctx.strokeStyle = pb.isBonus ? "darkorange" : "#fff";
+        ctx.stroke();
+        ctx.font = `${pb.radius}px Arial`;
+        ctx.fillStyle = "#000";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(pb.emot, pb.x, pb.y);
+        ctx.restore();
+      });
+      // Gambar bubbles aktif
       bubbles.forEach(bubble => {
+        ctx.save();
         ctx.beginPath();
         ctx.arc(bubble.x, bubble.y, bubble.radius, 0, Math.PI * 2);
         ctx.fillStyle = bubble.color;
@@ -423,13 +595,13 @@
         ctx.strokeStyle = bubble.isBonus ? "darkorange" : "#fff";
         ctx.lineWidth = bubble.isBonus ? 3 : 1;
         ctx.stroke();
-
         // Gambar emotikon di tengah gelembung
         ctx.fillStyle = "#000";
         ctx.font = `${bubble.radius}px Arial`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText(bubble.emot, bubble.x, bubble.y);
+        ctx.restore();
       });
     }
 
@@ -450,7 +622,6 @@
       const clickY = event.clientY - rect.top;
 
       let validClick = false;
-      const warningMessage = document.getElementById("warningMessage");
 
       for (let i = 0; i < bubbles.length; i++) {
         const bubble = bubbles[i];
@@ -466,6 +637,11 @@
             showScoreUp("+10 😎");
             validClick = true;
           }
+          // Bubble pop animation
+          poppingBubbles.push({
+            ...bubble,
+            popFrame: 0
+          });
           bubbles.splice(i, 1);
           scoreDisplay.textContent = score;
           break;
@@ -475,9 +651,13 @@
       if (!validClick) {
         warningMessage.textContent = "⚠️ Salah klik! Itu bukan warna target, kocak!";
         warningMessage.style.display = "block";
+        warningMessage.classList.add("shake");
         setTimeout(() => {
           warningMessage.style.display = "none";
-        }, 2000);
+          warningMessage.classList.remove("shake");
+        }, 700);
+        // Getar (vibrate) di HP
+        if (window.navigator.vibrate) window.navigator.vibrate(120);
       } else {
         popSound.currentTime = 0;
         popSound.play();
@@ -506,6 +686,13 @@
           if (bubble.x - bubble.radius < 0 || bubble.x + bubble.radius > canvas.width) bubble.dx *= -1;
           if (bubble.y - bubble.radius < 0 || bubble.y + bubble.radius > canvas.height) bubble.dy *= -1;
         });
+        // Bubble pop animation
+        for (let i = poppingBubbles.length - 1; i >= 0; i--) {
+          poppingBubbles[i].popFrame++;
+          if (poppingBubbles[i].popFrame > 8) {
+            poppingBubbles.splice(i, 1);
+          }
+        }
         drawBubbles();
       }
       requestAnimationFrame(update);
@@ -566,15 +753,18 @@
       clearInterval(timerInterval);
       clearInterval(targetInterval);
       clearTimeout(spawnBubbleTimeout);
-      alert("Waktu habis! Skor kamu: " + score);
-      saveScore(score);
-      window.location.reload();
+      setTimeout(() => {
+        alert("Waktu habis! Skor kamu: " + score);
+        saveScore(score);
+        window.location.reload();
+      }, 300);
     }
 
     // Fungsi untuk menyimpan skor ke leaderboard
     function saveScore(score) {
-      const playerName = prompt("Masukkan nama Anda:");
+      let playerName = prompt("Masukkan nama Anda:");
       if (playerName) {
+        playerName = playerName.trim().slice(0, 16);
         leaderboard.push({ name: playerName, score });
         leaderboard.sort((a, b) => b.score - a.score);
         leaderboard = leaderboard.slice(0, 10);
@@ -588,7 +778,7 @@
       leaderboardList.innerHTML = "";
       leaderboard.forEach((entry, index) => {
         const li = document.createElement("li");
-        li.textContent = `${index + 1}. ${entry.name} - ${entry.score}`;
+        li.innerHTML = `<span class="rank">${index + 1}.</span> <span>${entry.name}</span> <span style="margin-left:auto;font-weight:bold;">${entry.score}</span>`;
         leaderboardList.appendChild(li);
       });
     }
@@ -611,16 +801,18 @@
 
     // Panggil fungsi untuk memperbarui leaderboard saat halaman dimuat
     updateLeaderboard();
+
+    // Responsive canvas resize (untuk HP)
+    function resizeCanvas() {
+      let w = Math.min(window.innerWidth * 0.98, 600);
+      let h = w * 2 / 3;
+      canvas.width = w;
+      canvas.height = h;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
   </script>
-  <!-- Iklan TebakX -->
-  <div id="iklan-tebakx" style="margin:32px auto 0 auto; max-width:420px; text-align:center;">
-    <a href="https://dev123dev33.github.io/tebakx/" target="_blank" style="text-decoration:none;display:inline-block;">
-      <div style="background:linear-gradient(90deg,#6a11cb,#2575fc);color:#fff;padding:18px 16px;border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,0.13);font-size:1.15em;transition:transform 0.2s;cursor:pointer;">
-        🎉 <b>Coba TebakX!</b> Game tebak angka seru, adu insting & logika! <span style="background:#fff;color:#2575fc;padding:2px 8px;border-radius:8px;font-weight:bold;margin-left:8px;">Main Gratis</span>
-      </div>
-    </a>
-  </div>
-  <!-- Iklan TebakX Floating Samping -->
+    <!-- Iklan TebakX Floating Samping -->
   <a href="https://dev123dev33.github.io/tebakx/" target="_blank" id="iklan-tebakx-float" title="Coba TebakX!">
     <div class="iklan-float-content">
       🎉 <b>Coba TebakX!</b><br>
