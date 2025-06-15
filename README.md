@@ -1,4 +1,4 @@
-🆕✨ BUBBLE DASH v1.8 TELAH DIRILIS! ✨🫧
+🆕✨ BUBBLE DASH v1.9 TELAH DIRILIS! ✨🫧
 Versi ini hadir dengan peningkatan besar di tampilan, animasi, dan kenyamanan main! Siap dash lagi? 💨
 
 📱 Tampilan Mobile Makin Responsif
@@ -13,7 +13,7 @@ Lebih nyaman, lebih rapi, dan nggak bikin mata capek!
 
 📈 Animasi skor naik kini lebih halus, lebih enak dilihat!
 
-❌ Salah klik? Sekarang ada efek getar biar kamu langsung tahu!
+❌ Salah klik? Sekarang ada efek getar dan suara biar kamu langsung tahu!
 
 🎨 UI Lebih Modern & Interaktif
 
@@ -28,4 +28,4 @@ Leaderboard tampil lebih rapi di mobile, gampang dibaca dan lebih keren!
 Penyesuaian warna dan layout biar lebih bersih & nyaman dilihat.
 
 📥 Yuk update sekarang dan rasakan keseruan barunya!
-#BubbleDash #Update1_8 #NoLagMoreFun
+#BubbleDash #Update1_9 #NoLagMoreFun
