@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bubble Dash v1.8 Kocak</title>
+  <title>Bubble Dash v1.9 major update</title>
   <style>
     html, body {
       height: 100%;
@@ -415,6 +415,55 @@
       box-shadow: 0 12px 40px #6a11cbcc;
       filter: brightness(1.12) saturate(1.25);
     }
+    /* ...existing code... */
+#start-btn {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  position: relative;
+  top: -15px;
+  font-size: 20px;
+  padding: 14px 28px;
+}
+@media (max-width: 700px) {
+  #start-btn {
+    top: -32px !important; /* lebih naik di layar kecil */
+    font-size: 22px;
+    padding: 16px 32px;
+  }
+  #overlay > div {
+    padding-bottom: 40px !important; /* tambah ruang bawah overlay */
+  }
+}
+/* ...existing code... */
+    #restart-btn {
+      margin-top: 14px;
+      background: #ff9800;
+      color: #fff;
+      display: none;
+    }
+    #fullscreen-btn {
+      position: absolute;
+      top: 10px;
+      left: 58px;
+      background: #fff;
+      color: #333;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      font-size: 1.2em;
+      z-index: 10;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    body.dark #fullscreen-btn {
+      background: #444;
+      color: #ffe066;
+    }
+    @media (max-width: 700px) {
+      #start-btn { top: -6px; }
+      #fullscreen-btn { top: 6px; left: 54px; }
+    }
   </style>
 </head>
 <body>
@@ -432,8 +481,9 @@
   </div>
   <div id="game-container">
     <button class="theme-toggle" title="Ganti Tema" onclick="toggleTheme()">🌙</button>
+    <button id="fullscreen-btn" title="Fullscreen">⛶</button>
     <button id="manual-btn">Manual</button>
-    <h1>Bubble Dash v1.8 🤪</h1>
+    <h1>Bubble Dash v1.9 Major Update🚗</h1>
     <p>Target Color: <span id="targetColor"></span></p>
     <p>Time: <span id="timer">60</span> detik</p>
     <p>Score: <span id="score">0</span></p>
@@ -441,8 +491,10 @@
     <p id="warningMessage"></p>
     <canvas id="gameCanvas" width="600" height="400"></canvas>
     <audio id="popSound" src="pop.mp3"></audio>
+    <audio id="buzzerSound" src="buzzer.mp3"></audio>
     <button id="pause-btn">Pause</button>
     <button id="resume-btn" style="display: none;">Resume</button>
+    <button id="restart-btn">Restart</button>
     <div id="leaderboard">
       <h3>🏆 Leaderboard</h3>
       <ul id="leaderboard-list"></ul>
@@ -520,20 +572,25 @@
     const manualCloseBtn = document.getElementById("manual-close-btn");
     const pauseBtn = document.getElementById("pause-btn");
     const resumeBtn = document.getElementById("resume-btn");
+    const restartBtn = document.getElementById("restart-btn");
+    const fullscreenBtn = document.getElementById("fullscreen-btn");
     const leaderboardList = document.getElementById("leaderboard-list");
     const scoreUp = document.getElementById("scoreUp");
     const warningMessage = document.getElementById("warningMessage");
 
     let isPaused = false;
+    let isGameStarted = false;
+    let isGameEnded = false;
     let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
 
-    // Variabel untuk audio efek pop
+    // Variabel untuk audio efek pop & buzzer
     const popSound = document.getElementById("popSound");
+    const buzzerSound = document.getElementById("buzzerSound");
 
     // Variabel untuk bubble spawn rate
     let bubbleSpawnInterval = 800; // ms
 
-    let timerInterval, targetInterval, spawnBubbleTimeout;
+    let timerInterval, targetInterval, spawnBubbleTimeout, spawnReductionInterval;
 
     // Untuk animasi bubble pop
     let poppingBubbles = [];
@@ -607,7 +664,7 @@
 
     // Fungsi spawn bubble secara rekursif
     function spawnBubble() {
-      if (isPaused) return;
+      if (isPaused || isGameEnded) return;
       if (bubbles.length < 30) {
         createBubble();
       }
@@ -616,7 +673,7 @@
 
     // Event listener untuk klik pada canvas
     canvas.addEventListener("click", function(event) {
-      if (isPaused) return;
+      if (isPaused || isGameEnded) return;
       const rect = canvas.getBoundingClientRect();
       const clickX = event.clientX - rect.left;
       const clickY = event.clientY - rect.top;
@@ -658,6 +715,9 @@
         }, 700);
         // Getar (vibrate) di HP
         if (window.navigator.vibrate) window.navigator.vibrate(120);
+        // Suara buzzer
+        buzzerSound.currentTime = 0;
+        buzzerSound.play();
       } else {
         popSound.currentTime = 0;
         popSound.play();
@@ -669,6 +729,7 @@
       scoreUp.textContent = text;
       scoreUp.style.opacity = 1;
       scoreUp.style.top = "60px";
+      scoreUp.style.transition = "opacity 0.5s, top 0.5s cubic-bezier(.4,2,.6,1)";
       setTimeout(() => {
         scoreUp.style.opacity = 0;
         scoreUp.style.top = "30px";
@@ -677,7 +738,7 @@
 
     // Game loop untuk update canvas dan bubble movement
     function update() {
-      if (!isPaused) {
+      if (!isPaused && !isGameEnded) {
         // Bubble movement
         bubbles.forEach(bubble => {
           bubble.x += bubble.dx;
@@ -700,7 +761,18 @@
 
     // Fungsi untuk memulai permainan
     function startGame() {
+      if (isGameStarted) return; // Cegah double start
+      isGameStarted = true;
+      isGameEnded = false;
       overlay.style.display = "none";
+      restartBtn.style.display = "none";
+      score = 0;
+      timeLeft = 60;
+      bubbles = [];
+      poppingBubbles = [];
+      bubbleSpawnInterval = 800;
+      scoreDisplay.textContent = score;
+      timerDisplay.textContent = timeLeft;
       setTargetColor();
       update();
       timerInterval = setInterval(() => {
@@ -713,7 +785,7 @@
       targetInterval = setInterval(setTargetColor, 5000);
       spawnBubble();
       // Kurangi interval spawn bubble setiap 10 detik
-      const spawnReductionInterval = setInterval(() => {
+      spawnReductionInterval = setInterval(() => {
         if (bubbleSpawnInterval > 400) {
           bubbleSpawnInterval -= 50;
         } else {
@@ -728,12 +800,14 @@
       clearInterval(timerInterval);
       clearInterval(targetInterval);
       clearTimeout(spawnBubbleTimeout);
+      clearInterval(spawnReductionInterval);
       pauseBtn.style.display = "none";
       resumeBtn.style.display = "inline-block";
     }
 
     // Fungsi untuk melanjutkan permainan
     function resumeGame() {
+      if (isGameEnded) return;
       isPaused = false;
       timerInterval = setInterval(() => {
         timeLeft--;
@@ -750,14 +824,37 @@
 
     // Fungsi untuk mengakhiri permainan
     function endGame() {
+      if (isGameEnded) return;
+      isGameEnded = true;
+      isPaused = false;
       clearInterval(timerInterval);
       clearInterval(targetInterval);
       clearTimeout(spawnBubbleTimeout);
+      clearInterval(spawnReductionInterval);
       setTimeout(() => {
         alert("Waktu habis! Skor kamu: " + score);
         saveScore(score);
-        window.location.reload();
+        restartBtn.style.display = "inline-block";
       }, 300);
+    }
+
+    // Fungsi untuk restart game tanpa reload
+    function restartGame() {
+      isGameStarted = false;
+      isGameEnded = false;
+      score = 0;
+      timeLeft = 60;
+      bubbles = [];
+      poppingBubbles = [];
+      bubbleSpawnInterval = 800;
+      scoreDisplay.textContent = score;
+      timerDisplay.textContent = timeLeft;
+      setTargetColor();
+      overlay.style.display = "none";
+      restartBtn.style.display = "none";
+      pauseBtn.style.display = "inline-block";
+      resumeBtn.style.display = "none";
+      startGame();
     }
 
     // Fungsi untuk menyimpan skor ke leaderboard
@@ -765,6 +862,7 @@
       let playerName = prompt("Masukkan nama Anda:");
       if (playerName) {
         playerName = playerName.trim().slice(0, 16);
+        if (playerName.length === 0) playerName = "Player";
         leaderboard.push({ name: playerName, score });
         leaderboard.sort((a, b) => b.score - a.score);
         leaderboard = leaderboard.slice(0, 10);
@@ -776,6 +874,10 @@
     // Fungsi untuk memperbarui leaderboard
     function updateLeaderboard() {
       leaderboardList.innerHTML = "";
+      if (!leaderboard || leaderboard.length === 0) {
+        leaderboardList.innerHTML = "<li>Belum ada skor.</li>";
+        return;
+      }
       leaderboard.forEach((entry, index) => {
         const li = document.createElement("li");
         li.innerHTML = `<span class="rank">${index + 1}.</span> <span>${entry.name}</span> <span style="margin-left:auto;font-weight:bold;">${entry.score}</span>`;
@@ -790,6 +892,9 @@
     // Event listener untuk tombol Mulai
     startBtn.addEventListener("click", startGame);
 
+    // Event listener untuk tombol Restart
+    restartBtn.addEventListener("click", restartGame);
+
     // Event listener untuk tombol Manual (menampilkan petunjuk)
     manualBtn.addEventListener("click", () => {
       manualOverlay.style.display = "flex";
@@ -797,6 +902,17 @@
     // Event listener untuk menutup petunjuk Manual
     manualCloseBtn.addEventListener("click", () => {
       manualOverlay.style.display = "none";
+    });
+
+    // Tombol fullscreen
+    fullscreenBtn.addEventListener("click", () => {
+      if (canvas.requestFullscreen) {
+        canvas.requestFullscreen();
+      } else if (canvas.webkitRequestFullscreen) {
+        canvas.webkitRequestFullscreen();
+      } else if (canvas.msRequestFullscreen) {
+        canvas.msRequestFullscreen();
+      }
     });
 
     // Panggil fungsi untuk memperbarui leaderboard saat halaman dimuat
