@@ -1,31 +1,13 @@
-🆕✨ BUBBLE DASH v1.9 TELAH DIRILIS! ✨🫧
-Versi ini hadir dengan peningkatan besar di tampilan, animasi, dan kenyamanan main! Siap dash lagi? 💨
 
-📱 Tampilan Mobile Makin Responsif
-
-Canvas, tombol, overlay, dan leaderboard sekarang pas di semua ukuran layar HP.
-
-Lebih nyaman, lebih rapi, dan nggak bikin mata capek!
-
-🎞️ Animasi & Efek Baru
-
-💥 Bubble meledak saat diklik, bikin tiap sentuhan makin satisfying!
-
-📈 Animasi skor naik kini lebih halus, lebih enak dilihat!
-
-❌ Salah klik? Sekarang ada efek getar dan suara biar kamu langsung tahu!
-
-🎨 UI Lebih Modern & Interaktif
-
-Tombol membesar saat disentuh, bikin lebih jelas dan fun.
-
-Overlay lebih smooth, transisi terasa natural.
-
-Leaderboard tampil lebih rapi di mobile, gampang dibaca dan lebih keren!
-
-🎯 Perbaikan Minor
-
-Penyesuaian warna dan layout biar lebih bersih & nyaman dilihat.
-
-📥 Yuk update sekarang dan rasakan keseruan barunya!
-#BubbleDash #Update1_9 #NoLagMoreFun
+<h2>Bubble Dash v2.0 GOG Update!</h2>
+<p>
+Selamat datang di versi terbaru Bubble Dash!<br>
+Sekarang tampil lebih rapi, modern, dan responsif di semua device.<br><br>
+✨ Optimisasi performa, game makin ringan & lancar.<br>
+🎨 UI/UX dirombak total, lebih nyaman & enak dipakai.<br>
+🐞 Bug utama sudah diperbaiki.<br>
+📱 Layout otomatis menyesuaikan layar HP, tablet, dan desktop.<br>
+🌙 Tema gelap & terang, ganti sesuai selera.<br>
+🏆 Leaderboard & manual baru, makin mudah digunakan.<br><br>
+Yuk, mainkan dan rasakan pengalaman baru di Bubble Dash v2.0!
+</p>
